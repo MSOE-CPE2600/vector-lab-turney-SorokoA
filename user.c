@@ -1,10 +1,10 @@
-/****************************************
+/*****************************************
 * FileName: user.c
 * Descripton: Will keep the program 
 * running, and store all necessary data
 * Author: Aiden Soroko
 * Date: 10/7/2025
-*****************************************/
+******************************************/
 
 #include <stdio.h>
 #include <stdlib.h>
