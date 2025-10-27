@@ -1,4 +1,4 @@
-/****************************************
+/*****************************************
 * FileName: vectorMath.c
 * Descripton: Will store, and preform various
 * arithmetic operations on user inputted vectors

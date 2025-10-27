@@ -1,11 +1,11 @@
-/*****************************************
+/******************************************
 * FileName: vectorMath.h
 * Descripton: Defines struct of vectors to be
 * used in vectorMath.c
 * Author: Aiden Soroko
 * Date: 9/30/2025
 ******************************************/
-typedef struct{
+typedef struct vector{
     char name[15];
     float i;
     float j;

@@ -8,6 +8,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
@@ -16,7 +17,7 @@
 #ifndef vector_h
 #define vector_h
 
-typedef struct
+typedef struct vector
 {
     char name[15];
     float i;
@@ -25,11 +26,21 @@ typedef struct
 } vector;
 
 #endif
+vector* array = NULL;
+
+
+void catch_sigint(int signum);
+
 
 int run(){
+    if (signal(SIGINT, catch_sigint) == SIG_ERR){
+        printf("there was an error registering the signal catcher\n");
+        return 1;
+    }
     //define variables
-    vector array[10];
+    array = malloc(10*sizeof(vector));
     int count = 0;
+    int countMax = 10;
     char *token;
     bool continues = true;
     char userinput[100];
@@ -40,7 +51,6 @@ int run(){
     ans.k = 0;
 
     strcpy(ans.name,"ans");
-
     while (continues){
         int whereLocated = 0;
         bool noDisplay = false;
@@ -73,11 +83,72 @@ int run(){
                 "clear - clears the stored vectors\n");
             
         } else if(strcmp(tokened[0],"clear") == 0){
+            countMax = 1;
+            array = realloc(array,sizeof(vector));
             count = 0;
         } else if(strcmp(tokened[0],"list") == 0){
             for (int j = 0; j < count ; j++){
                 printf("%s %.2f %.2f %.2f\n",array[j].name,array[j].i,array[j].j,array[j].k);
             }
+        } else if(strcmp(tokened[0],"load") == 0){
+            FILE *fp;
+            fp = fopen(tokened[1],"r");
+            if (!fp){
+                printf("error opening file\n");
+            } else {
+                countMax = 1;
+                bool validfile = true;
+                char* filetoken;
+                array = realloc(array,sizeof(vector));
+                count = 0;
+                char line[100];
+                int whereInFileLocated = 0;
+                while(fgets(line,99,fp) && validfile){
+                    line[strcspn(line, "\n")] = '\0';
+                    int filetokcount = 0;
+                    char* filetokened[5];
+                    filetoken = strtok(line, ",");
+                    //break the input up into tokens
+                    while (filetoken != NULL){
+                        filetokened[filetokcount] = filetoken;
+                        filetoken = strtok(NULL, ",");
+                        filetokcount++;
+                    }
+                    if (isdigit(filetokened[1][0]) != 0 && isdigit(filetokened[2][0]) != 0 
+                        && isdigit(filetokened[3][0]) != 0){
+                            array[whereInFileLocated] = create(filetokened[0],0,0,0);
+                            array[whereInFileLocated].i = atof(filetokened[1]);
+                            array[whereInFileLocated].j = atof(filetokened[2]);
+                            array[whereInFileLocated].k = atof(filetokened[3]);
+                            output(array[whereInFileLocated]);
+                            whereInFileLocated++;
+                            count++;
+                    } else {
+                        validfile = false;
+                    }
+                    if (count == countMax){
+                        countMax *= 2;
+                        array = realloc(array,countMax*sizeof(vector));
+                    }
+                }
+                if(!validfile){
+                    printf("invalid file formating\n");
+                }
+                fclose(fp);
+            }
+        }else if(strcmp(tokened[0],"save") == 0){
+            FILE *fp;
+            fp = fopen(tokened[1],"w");
+            if(!fp){
+                printf("Unable to open file\n");
+            } else if(count == 0){
+                printf("nothing to print to file\n");
+            } else {
+                for(int z = 0; z < count; z++){
+                    fprintf(fp,"%s,%.2f,%.2f,%.2f\n",array[z].name,array[z].i,array[z].j,array[z].k);
+                }
+            }
+            fclose(fp);
         }else {
             if (isdigit(tokened[0][0]) == 0){
                 //check for already made vectors of the inputted name
@@ -86,7 +157,6 @@ int run(){
                     if (strcmp(array[j].name,tokened[0]) == 0){
                         dupe = true;
                     } else {
-                        printf("%d",j);
                         whereLocated++;
                     }
                 }
@@ -126,10 +196,12 @@ int run(){
                     }
                 }  
                 //check if the list is full and can't accept new vectors
-                if (count == 10 && !dupe){
-                    printf("list is full, try clearing if you want more vectors\n");
-                    //check to se if the vector wanting to be displayed is defined
-                } else if(!dupe && i == 1){
+                if (count == countMax && !dupe){
+                    countMax *= 2;
+                    array = realloc(array,countMax*sizeof(vector));
+                }
+                //check to se if the vector wanting to be displayed is defined
+                if(!dupe && i == 1){
                     printf("No vector to be displayed\n");
                     noDisplay = true;
                     //check if the vectors on the right hand side of the equals sign are defined
@@ -323,6 +395,11 @@ int run(){
             }
         }
     }
-
+    free(array);
     return 0;
+}
+void catch_sigint(int signum){
+    free(array);
+    printf("\n");
+    exit(signum);
 }

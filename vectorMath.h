@@ -1,4 +1,4 @@
-/****************************************
+/*****************************************
 * FileName: vectorMath.h
 * Descripton: Defines functions to be used
 * in the vectorMath.c file

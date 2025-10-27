@@ -1,4 +1,4 @@
-/****************************************
+/*****************************************
 * FileName: controller.c
 * Descripton: Will keep the program 
 * running, and store all necessary data

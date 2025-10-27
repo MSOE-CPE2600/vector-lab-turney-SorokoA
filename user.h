@@ -1,4 +1,4 @@
-/****************************************
+/*****************************************
 * FileName: user.h
 * Descripton: defines functions in user.c
 * Author: Aiden Soroko

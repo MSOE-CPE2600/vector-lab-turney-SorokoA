@@ -1,4 +1,4 @@
-/****************************************
+/*****************************************
 * FileName: controller.h
 * Descripton: defines functions in controller.c
 * Author: Aiden Soroko
