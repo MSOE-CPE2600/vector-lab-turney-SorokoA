@@ -38,9 +38,9 @@ int run(){
         return 1;
     }
     //define variables
-    array = malloc(10*sizeof(vector));
+    array = malloc(sizeof(vector));
     int count = 0;
-    int countMax = 10;
+    int countMax = 1;
     char *token;
     bool continues = true;
     char userinput[100];
@@ -114,8 +114,9 @@ int run(){
                         filetoken = strtok(NULL, ",");
                         filetokcount++;
                     }
-                    if (isdigit(filetokened[1][0]) != 0 && isdigit(filetokened[2][0]) != 0 
-                        && isdigit(filetokened[3][0]) != 0){
+
+                    if ((isdigit(filetokened[1][0]) != 0  || isdigit(filetokened[1][1]) != 0) && (isdigit(filetokened[2][0]) != 0  || isdigit(filetokened[2][1]) != 0) 
+                        && (isdigit(filetokened[3][0]) != 0  || isdigit(filetokened[3][1]) != 0)){
                             array[whereInFileLocated] = create(filetokened[0],0,0,0);
                             array[whereInFileLocated].i = atof(filetokened[1]);
                             array[whereInFileLocated].j = atof(filetokened[2]);
@@ -137,18 +138,20 @@ int run(){
                 fclose(fp);
             }
         }else if(strcmp(tokened[0],"save") == 0){
-            FILE *fp;
-            fp = fopen(tokened[1],"w");
-            if(!fp){
-                printf("Unable to open file\n");
-            } else if(count == 0){
+            if(count == 0){
                 printf("nothing to print to file\n");
             } else {
-                for(int z = 0; z < count; z++){
-                    fprintf(fp,"%s,%.2f,%.2f,%.2f\n",array[z].name,array[z].i,array[z].j,array[z].k);
+                FILE *fp;
+                fp = fopen(tokened[1],"w");
+                if(!fp){
+                    printf("Unable to open file\n");
+                }else {
+                    for(int z = 0; z < count; z++){
+                        fprintf(fp,"%s,%.2f,%.2f,%.2f\n",array[z].name,array[z].i,array[z].j,array[z].k);
+                    }
                 }
+                fclose(fp);
             }
-            fclose(fp);
         }else {
             if (isdigit(tokened[0][0]) == 0){
                 //check for already made vectors of the inputted name
@@ -216,7 +219,8 @@ int run(){
             }
             if (!noDisplay){
                 //check if it is in the form a = 0 0 0 
-                if(isdigit(tokened[2][0]) != 0 && isdigit(tokened[3][0]) != 0 && isdigit(tokened[4][0]) != 0){
+                if((isdigit(tokened[2][0]) != 0  || isdigit(tokened[2][1]) != 0) && (isdigit(tokened[3][0]) != 0  || isdigit(tokened[3][1]) != 0) 
+                        && (isdigit(tokened[4][0]) != 0  || isdigit(tokened[4][1]) != 0)){
                     array[whereLocated].i = atof(tokened[2]);
                     array[whereLocated].j = atof(tokened[3]);
                     array[whereLocated].k = atof(tokened[4]);
